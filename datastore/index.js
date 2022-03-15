@@ -101,12 +101,13 @@ exports.readOne = (id, callback) => {
 
 exports.update = (id, text, callback) => {
   console.log('id:::', id);
+  // still store id in items obj
 
   var fileName = path.join(`${exports.dataDir}`, `${id}.txt`);
 
   exports.readOne(id, function(err) {
     if (err) {
-      callback(new Error(`Could not update id: ${id}`));
+      callback(new Error(`Id does not exist: ${id}`));
     } else {
 
       fs.writeFile(fileName, text, function(err) {
@@ -133,14 +134,27 @@ exports.update = (id, text, callback) => {
 };
 
 exports.delete = (id, callback) => {
-  var item = items[id];
-  delete items[id];
-  if (!item) {
-    // report an error if item not found
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback();
-  }
+  //var for file path
+  const filePath = path.join(`${exports.dataDir}`, `${id}.txt`);
+  //use fs.unlink()
+  //args: filePath, callback(err){
+  fs.unlink(filePath, function (err) {
+    if (err) {
+      callback(new Error('Could not find file to delete'));
+    } else {
+      callback();
+    }
+  });
+
+
+  // var item = items[id];
+  // delete items[id];
+  // if (!item) {
+  //   // report an error if item not found
+  //   callback(new Error(`No item with id: ${id}`));
+  // } else {
+  //   callback();
+  // }
 };
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
