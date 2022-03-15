@@ -8,9 +8,16 @@ var items = {};
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
 exports.create = (text, callback) => {
-  var id = counter.getNextUniqueId();
-  items[id] = text;
-  callback(null, { id, text });
+  counter.getNextUniqueId(function(err, counter) {
+    if (err) {
+      console.log('unknown error');
+    } else {
+      var id = counter;
+      items[id] = text;
+      callback(null, { id, text });
+    }
+  });
+
 };
 
 exports.readAll = (callback) => {
@@ -59,3 +66,7 @@ exports.initialize = () => {
     fs.mkdirSync(exports.dataDir);
   }
 };
+
+
+// sub-problem 1: save the current state of the counter to the hard drive, so it's persisted between server restarts
+// 1A) rewrite getNextUniqueId to make use of the provided readCounter and writeCounter functions

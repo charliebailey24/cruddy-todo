@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const sprintf = require('sprintf-js').sprintf;
 
-var counter = 0;
+// var counter = 0;
 
 // Private helper functions ////////////////////////////////////////////////////
 
@@ -26,6 +26,7 @@ const readCounter = (callback) => {
 };
 
 const writeCounter = (count, callback) => {
+  console.log('callback in writeCounter:::', callback);
   var counterString = zeroPaddedNumber(count);
   fs.writeFile(exports.counterFile, counterString, (err) => {
     if (err) {
@@ -38,9 +39,29 @@ const writeCounter = (count, callback) => {
 
 // Public API - Fix this function //////////////////////////////////////////////
 
-exports.getNextUniqueId = () => {
-  counter = counter + 1;
-  return zeroPaddedNumber(counter);
+exports.getNextUniqueId = (callback) => {
+  console.log('callback in nextId', callback);
+  //counter = counter + 1;
+  // write the counter to the hard drive
+
+  readCounter(function(err, data) {
+
+    if (err) {
+      console.log('unknown error');
+    } else {
+      //write to file
+      writeCounter(data + 1, function(err, data) {
+        if (err) {
+          console.log('unknown error');
+        } else {
+          callback(null, data);
+        }
+      });
+    }
+
+  });
+
+  // return zeroPaddedNumber(counter);
 };
 
 
@@ -48,3 +69,34 @@ exports.getNextUniqueId = () => {
 // Configuration -- DO NOT MODIFY //////////////////////////////////////////////
 
 exports.counterFile = path.join(__dirname, 'counter.txt');
+
+
+// writeCounter(counter, (err, data) => {
+//   console.log('writeCounter triggering 1');
+//   if (err) {
+//     console.log('error in getNextUniqueId --> writeCounter:::', err);
+//   } else {
+//     console.log('the counterString:::', data);
+//     readCounter((err, data) => {
+//       if (err) {
+//         console.log('error in getNextUniqueId --> writeCounter --> readCounter:::', err);
+//       } else {
+//         console.log('data after passing through hard drive:::', data);
+//         return zeroPaddedNumber(data);
+//       }
+//     });
+//   }
+// });
+
+
+
+  // counter();
+  // 00001
+
+
+  //read --> counter
+  // increment
+  //write
+
+  // return the counter read from the hard drive
+  // console.log('counter:::', counter);
