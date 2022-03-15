@@ -21,7 +21,7 @@ exports.create = (text, callback) => {
       // file name needs to be current `${id}.txt`
 
       //(path.join(`${exports.dataDir}`,`${id}.txt`))
-      fs.writeFile((path.join(`${exports.dataDir}`, `${id}.txt`)), text, function(err, data) {
+      fs.writeFile((path.join(`${exports.dataDir}`, `${id}.txt`)), text, function(err) {
         if (err) {
           console.log('error writting new file');
         } else {
@@ -33,11 +33,45 @@ exports.create = (text, callback) => {
 
 };
 
+// Next, refactor the readAll function by returning an array of todos to client app whenever a GET request to the collection route occurs. To do this, you will need to read the dataDir directory and build a list of files. Remember, the id of each todo item is encoded in its filename.
+
+//filename: 00001.txt
+//  want to seperate 00001 from .txt
+// return id: id, text: id
+
+// We would like to read the files from the ENTIRE directory:
+// https://nodejs.org/api/fs.html#fsreaddirpath-options-callback
+//fs.readdir(path,[options,] callback)
+
+//readdir's callback function gets two args: err and files...files is the array of the NAMES of the files in the directory excluding '.' and '..'
+//So I believe without parsing/slicing we will receive file names that look like "00001txt" and a files array like ['00001txt', '00002txt'].
+//We may then need to slice each of the items in the array
+//eventually end up with an array  of individual files where the id and text are both id value
+
+//I think we should use the same path we used above: `${exports.dataDir}` ....maybe no ${}
+// fs.readdir callback could be the if error first check...
+
 exports.readAll = (callback) => {
-  var data = _.map(items, (text, id) => {
-    return { id, text };
+
+  fs.readdir(`${exports.dataDir}`, function (err, data) {
+    if (err) {
+      console.log('error reading saved file');
+    } else {
+      //use map
+      var todos = _.map(data, (name) => {
+        var todo = { id: name.slice(0, -4), text: name.slice(0, -4) };
+        return todo;
+      });
+      console.log('todos:', todos);
+      callback(null, todos);
+    }
   });
-  callback(null, data);
+
+
+  // var data = _.map(items, (text, id) => {
+  //   return { id, text };
+  // });
+  // callback(null, data);
 };
 
 exports.readOne = (id, callback) => {
