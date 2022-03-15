@@ -75,22 +75,61 @@ exports.readAll = (callback) => {
 };
 
 exports.readOne = (id, callback) => {
-  var text = items[id];
-  if (!text) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback(null, { id, text });
-  }
+  // readFile passing in export.datadir id concat with .txt
+  // set text equal to data we get back from readFile
+  // follow existing pattern for our callback to server.js
+
+  fs.readFile(path.join(`${exports.dataDir}`, `${id}.txt`), function (err, fileText) {
+    if (err) {
+      callback(new Error(`No item with id: ${id}`));
+    } else {
+      var text = fileText.toString('utf8');
+      callback(null, { id, text });
+    }
+  });
+
+  // var text = items[id];
+  // if (!text) {
+  //   callback(new Error(`No item with id: ${id}`));
+  // } else {
+  //   console.log('text:::', text);
+  //   callback(null, { id, text });
+  // }
 };
 
+//readfrom file use: path.join(expo....,id.txt, )
+
 exports.update = (id, text, callback) => {
-  var item = items[id];
-  if (!item) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    items[id] = text;
-    callback(null, { id, text });
-  }
+  console.log('id:::', id);
+
+  var fileName = path.join(`${exports.dataDir}`, `${id}.txt`);
+
+  exports.readOne(id, function(err) {
+    if (err) {
+      callback(new Error(`Could not update id: ${id}`));
+    } else {
+
+      fs.writeFile(fileName, text, function(err) {
+        if (err) {
+          callback(new Error(`Could not update id: ${id}`));
+          // console.log(`Could not update id: ${id}`);
+        } else {
+          callback(null, { id, text });
+        }
+      });
+
+    }
+  });
+
+
+
+  // var item = items[id];
+  // if (!item) {
+  //   callback(new Error(`No item with id: ${id}`));
+  // } else {
+  //   items[id] = text;
+  //   callback(null, { id, text });
+  // }
 };
 
 exports.delete = (id, callback) => {
