@@ -26,7 +26,6 @@ const readCounter = (callback) => {
 };
 
 const writeCounter = (count, callback) => {
-  console.log('callback in writeCounter:::', callback);
   var counterString = zeroPaddedNumber(count);
   fs.writeFile(exports.counterFile, counterString, (err) => {
     if (err) {
@@ -40,7 +39,6 @@ const writeCounter = (count, callback) => {
 // Public API - Fix this function //////////////////////////////////////////////
 
 exports.getNextUniqueId = (callback) => {
-  console.log('callback in nextId', callback);
   //counter = counter + 1;
   // write the counter to the hard drive
 
@@ -90,13 +88,13 @@ exports.counterFile = path.join(__dirname, 'counter.txt');
 
 
 
-  // counter();
-  // 00001
+// counter();
+// 00001
 
 
-  //read --> counter
-  // increment
-  //write
+//read --> counter
+// increment
+//write
 
-  // return the counter read from the hard drive
-  // console.log('counter:::', counter);
+// return the counter read from the hard drive
+// console.log('counter:::', counter);
